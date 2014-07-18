@@ -812,6 +812,13 @@ LOCAL_MODULE := libc_bionic
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 LOCAL_SYSTEM_SHARED_LIBRARIES :=
 
+ifeq ($(TARGET_ARCH)-$(ARCH_ARM_HAVE_TLS_REGISTER),arm-true)
+    LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
+    ifeq ($(TARGET_ARCH_VARIANT),armv6-vfp)
+        LOCAL_ARM_MODE := arm
+    endif
+endif
+
 include $(BUILD_STATIC_LIBRARY)
 
 
@@ -921,6 +928,13 @@ LOCAL_SRC_FILES := \
 ifeq ($(TARGET_ARCH),arm)
 	LOCAL_NO_CRT := true
 	LOCAL_CFLAGS += -DCRT_LEGACY_WORKAROUND
+
+    ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
+        LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
+        ifeq ($(TARGET_ARCH_VARIANT),armv6-vfp)
+            LOCAL_ARM_MODE := arm
+        endif
+    endif
 
 	LOCAL_SRC_FILES := \
 		arch-arm/bionic/crtbegin_so.c \
