@@ -116,9 +116,37 @@ extern int __set_tls(void *ptr);
   * register, which avoids touching the data cache
   * completely.
   */
+
+#if defined(__thumb__) && !defined(__thumb2__)
+#  define  __ATOMIC_SWITCH_TO_ARM \
+            "adr r3, 5f\n" \
+            "bx  r3\n" \
+            ".align\n" \
+            ".arm\n" \
+        "5:\n"
+/* note: the leading \n below is intentional */
+#  define __ATOMIC_SWITCH_TO_THUMB \
+            "\n" \
+            "adr r3, 6f+1\n" \
+            "bx  r3\n" \
+            ".thumb\n" \
+        "6:\n"
+#  define __ATOMIC_CLOBBERS   "r3"  /* list of clobbered registers */
+#else
+#  define  __ATOMIC_SWITCH_TO_ARM   /* nothing */
+#  define  __ATOMIC_SWITCH_TO_THUMB /* nothing */
+#  define  __ATOMIC_CLOBBERS        /* nothing */
+#endif
+
 #      define __get_tls() \
     ({ register unsigned int __val; \
-       asm ("mrc p15, 0, %0, c13, c0, 3" : "=r"(__val)); \
+       __asm__ __volatile__ (  \
+             __ATOMIC_SWITCH_TO_ARM \
+              "mrc p15, 0, %0, c13, c0, 3\n" \
+             __ATOMIC_SWITCH_TO_THUMB \
+              : "=r"(__val) \
+              : \
+              : __ATOMIC_CLOBBERS); \
        (volatile void*) __val; })
 #    else /* !HAVE_ARM_TLS_REGISTER */
  /* The kernel provides the address of the TLS at a fixed
