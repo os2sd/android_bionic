@@ -166,7 +166,7 @@
  * (also present in ARMv6K, but not implemented in ARMv7-M, neither of which
  * we care about)
  */
-#if __ARM_ARCH__ >= 7
+#if (__ARM_ARCH__ >= 7) || (__ARM_ARCH_6K__)
 #  define __ARM_HAVE_LDREXD
 #endif
 
