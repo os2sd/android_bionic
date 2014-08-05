@@ -35,7 +35,7 @@
  * This is done to abstract us from the various ARM Architecture
  * quirks and alphabet soup.
  *
- * IMPORTANT: We have no intention to support anything below an ARMv4T !
+ * IMPORTANT: We have no intention to support anything below an ARMv5 !
  */
 
 /* __ARM_ARCH__ is a number corresponding to the ARM revision
@@ -65,22 +65,9 @@
 #
 #    define __ARM_ARCH__ 5
 #
-#  elif defined __ARM_ARCH_4T__
-#
-#    define __ARM_ARCH__ 4
-#
-#  elif defined __ARM_ARCH_4__
-#    error ARMv4 is not supported, please use ARMv4T at a minimum
 #  else
 #    error Unknown or unsupported ARM architecture
 #  endif
-#endif
-
-/* experimental feature used to check that our ARMv4 workarounds
- * work correctly without a real ARMv4 machine */
-#ifdef BIONIC_EXPERIMENTAL_FORCE_ARMV4
-#  undef  __ARM_ARCH__
-#  define __ARM_ARCH__  4
 #endif
 
 /* define __ARM_HAVE_5TE if we have the ARMv5TE instructions */
